@@ -1,9 +1,9 @@
 FROM ruby:2.7-alpine
 
 LABEL version="2.0.1"
-LABEL repository="https://github.com/helaili/jekyll-action"
-LABEL homepage="https://github.com/helaili/jekyll-action"
-LABEL maintainer="Alain Hélaïli <helaili@github.com>"
+LABEL repository="https://github.com/kyledawson/jekyll-action"
+LABEL homepage="https://github.com/kyledawson/jekyll-action"
+# LABEL maintainer="Alain Hélaïli <helaili@github.com>"
 
 RUN apk add --no-cache git build-base
 # Allow for timezone setting in _config.yml
@@ -18,4 +18,5 @@ COPY LICENSE README.md /
 
 COPY entrypoint.sh /
 
+ENV INPUT_BUNDLER_VERSION=2.4.21
 ENTRYPOINT ["/entrypoint.sh"]
