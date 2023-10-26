@@ -6,12 +6,12 @@ echo "Starting the Jekyll Action"
 if [ -n "${INPUT_BUNDLER_VERSION}" ]; then
   echo "Installing bundler version specified by the user."
   gem install bundler -v ${INPUT_BUNDLER_VERSION}
-fi 
+fi
 
 if [ -n "$INPUT_PRE_BUILD_COMMANDS" ]; then
   echo "Execute pre-build commands specified by the user."
   eval "$INPUT_PRE_BUILD_COMMANDS"
-fi 
+fi
 
 if [ -z "${INPUT_TOKEN}" ] && [ -n "${JEKYLL_PAT}" ]; then
   echo "::warning::The JEKYLL_PAT environment variable is deprecated. Please use the token parameter"
@@ -21,7 +21,7 @@ fi
 if [ -z "${INPUT_TOKEN}" ] && [ "${INPUT_BUILD_ONLY}" != true ]; then
   echo "::error::No token provided. Please set the token parameter."
   exit 1
-fi 
+fi
 
 if [ -n "${INPUT_JEKYLL_SRC}" ]; then
   JEKYLL_SRC="${INPUT_JEKYLL_SRC}"
@@ -67,9 +67,9 @@ if [ -n "${INPUT_JEKYLL_ENV}" ]; then
 else
   echo "::debug::Environment default in use - production"
   INPUT_JEKYLL_ENV="production"
-fi  
+fi
 
-# Which branch will be used for publishing? 
+# Which branch will be used for publishing?
 # It can be provided, or dectected through API or inferred from the repo name, which is a bit of a legacy behavior.
 if [ -n "${INPUT_TARGET_BRANCH}" ]; then
   remote_branch="${INPUT_TARGET_BRANCH}"
@@ -81,7 +81,7 @@ elif [ -n "${INPUT_TOKEN}" ]; then
   if [ -z "${remote_branch}" ]; then
     echo "::warning::Cannot get GitHub Pages source branch via API."
     echo "::warning::${response}"
-  else 
+  else
     echo "::debug::using the branch ${remote_branch} set on the repo settings"
   fi
 fi
@@ -131,7 +131,7 @@ echo "::debug::Local branch is ${LOCAL_BRANCH}"
 
 cd "${GITHUB_WORKSPACE}/${GEM_SRC}"
 
-if [ -z "${INPUT_BUNDLER_VERSION}" ] && [ -f "Gemfile.lock" ]; then 
+if [ -z "${INPUT_BUNDLER_VERSION}" ] && [ -f "Gemfile.lock" ]; then
   echo "Resolving bundler version from Gemfile.lock"
   VERSION_LINE_NUMBER=$(($(cat Gemfile.lock | grep -n 'BUNDLED WITH' | grep -oE '\d+')+1))
   BUNDLER_VERSION=$(head -n ${VERSION_LINE_NUMBER} Gemfile.lock  | tail -n 1 | xargs)
@@ -148,11 +148,11 @@ if [ "${JEKYLL_DEBUG}" = true ]; then
   # Activating debug for Jekyll
   echo "::debug::Jekyll debug is on"
   VERBOSE="--verbose"
-else 
+else
   echo "::debug::Jekyll debug is off"
 fi
 
-JEKYLL_ENV=${INPUT_JEKYLL_ENV} bundle exec ${BUNDLE_ARGS} jekyll build -s ${GITHUB_WORKSPACE}/${JEKYLL_SRC} -d ${TARGET_DIR} ${INPUT_JEKYLL_BUILD_OPTIONS} ${VERBOSE} 
+JEKYLL_ENV=${INPUT_JEKYLL_ENV} bundle exec ${BUNDLE_ARGS} jekyll build -s ${GITHUB_WORKSPACE}/${JEKYLL_SRC} -d ${TARGET_DIR} ${INPUT_JEKYLL_BUILD_OPTIONS} ${VERBOSE}
 echo "Jekyll build done"
 
 if [ "${INPUT_BUILD_ONLY}" = true ]; then
@@ -166,7 +166,7 @@ fi
 
 cd ${BUILD_DIR}
 
-# Initializing the repo now to prevent the Jekyll build from overwriting the .git folder 
+# Initializing the repo now to prevent the Jekyll build from overwriting the .git folder
 if [ "${INPUT_KEEP_HISTORY}" != true ]; then
   echo "::debug::Initializing new repo"
   LOCAL_BRANCH="main"
@@ -194,6 +194,6 @@ git commit $COMMIT_OPTIONS -m "jekyll build from Action ${GITHUB_SHA}" && \
 git push $PUSH_OPTIONS $REMOTE_REPO $LOCAL_BRANCH:$remote_branch && \
 echo "SHA=$( git rev-parse ${LOCAL_BRANCH} )" >> $GITHUB_OUTPUT
 rm -fr .git && \
-cd .. 
+cd ..
 
 exit $?
